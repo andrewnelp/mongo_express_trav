@@ -42,7 +42,7 @@ router.post("/register", (req, res) => {
     User.findOne({ email: req.body.email }).then(user => {
       if (user) {
         req.flash("error_msg", "Email already registered");
-        res.redirect("/users/login");
+        res.redirect("/users/register");
       } else {
         const newUser = new User({
           name: req.body.name,

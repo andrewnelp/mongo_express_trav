@@ -8,6 +8,9 @@ const session = require("express-session");
 
 const app = express();
 
+//Load routes
+const ideas = require("./routes/ideas");
+
 // Map global promise - get rid of warning
 mongoose.Promise = global.Promise;
 // Connect to mongoose
@@ -17,10 +20,6 @@ mongoose.connect('mongodb://localhost/vidjot-dev', {
   .then(() => console.log('MongoDB Connected...'))
   .catch(err => console.log(err));
 
-//Load Idea Model
-require("./models/Idea");
-// passing to Idea the name of the models
-const Idea = mongoose.model("ideas");
 
 // Handlebars Middleware
 app.engine('handlebars', exphbs({
@@ -45,7 +44,7 @@ app.use(session({
 app.use(flash());
 
 //global variables
-app.use(function(req, res, next){
+app.use(function (req, res, next) {
   res.locals.success_msg = req.flash("success_msg");
   res.locals.error_msg = req.flash("error_msg");
   res.locals.error = req.flash("error");
@@ -54,7 +53,7 @@ app.use(function(req, res, next){
 
 // Index Route
 app.get('/', (req, res) => {
-  const title = 'Welcome';
+  const title = 'Welcome, guys';
   res.render('index', {
     title: title
   });
@@ -65,87 +64,20 @@ app.get('/about', (req, res) => {
   res.render('about');
 });
 
-// Idea Index Page
-app.get("/ideas", (req, res) => {
-  Idea.find({})
-    .sort({ date: "desc" })
-    .then(ideas => {
-      res.render("ideas/index", {
-        ideas: ideas
-      });
-    })
-})
 
-//Add Idea Form
-app.get('/ideas/add', (req, res) => {
- res.render("ideas/add");
+
+// User login route
+app.get("/users/login", (req, res) => {
+  res.send("login");
 });
 
-// Edit Idea form
-app.get('/ideas/edit/:id', (req, res) => {
-  Idea.findOne({
-    _id: req.params.id
-  })
-    .then(idea => {
-      res.render('ideas/edit', {
-        idea: idea
-      });
-    })
+// User register route
+app.get("/users/register", (req, res) => {
+  res.send("register");
 });
 
-// Process form and validating
-app.post("/ideas", (req, res) => {
-  let errors = [];
-  if (!req.body.title) {
-    errors.push({ text: "Please add a title" });
-  }
-  if (!req.body.details) {
-    errors.push({ text: "Please add some details" });
-  }
-  if (errors.length > 0) {
-    res.render("ideas/add", {
-      errors: errors,
-      title: req.body.title,
-      details: req.body.details
-    });
-  } else {
-    const newUser = {
-      title: req.body.title,
-      details: req.body.details
-    }
-    new Idea(newUser)
-      .save()
-      .then(idea => {
-        req.flash("success_msg", "Video Idea added");
-        res.redirect("/ideas");
-      })
-  }
-});
-
-// Edit form process
-app.put("/ideas/:id", (req, res) => {
-  Idea.findOne({
-    _id:req.params.id
-  })
-  .then(idea => {
-    // new values
-    idea.title = req.body.title;
-    idea.details = req.body.details;
-    idea.save().then(idea =>{
-      req.flash("success_msg", "Video Idea updated");
-      res.redirect("/ideas");
-    })
-  })
-});
-
-// Delete idea
-app.delete("/ideas/:id", (req, res) => {
-  Idea.remove({_id: req.params.id})
-  .then(() =>{
-    req.flash("success_msg", "Video Idea removed");
-    res.redirect("/ideas")
-  });
-})
+//use routes
+app.use("/ideas", ideas);
 
 const port = 5000;
 

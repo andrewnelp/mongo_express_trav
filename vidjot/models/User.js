@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-//creating Schema
+// creating Schema
 const UserSchema = new Schema({
   name: {
     type: String,
@@ -21,4 +21,4 @@ const UserSchema = new Schema({
   }
 });
 
-mongoose.model("users", UserSchema);
+mongoose.model('users', UserSchema);

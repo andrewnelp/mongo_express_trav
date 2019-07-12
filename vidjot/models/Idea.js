@@ -1,20 +1,20 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-//creating Schema
+// creating Schema
 const IdeaSchema = new Schema({
-  title:{
+  title: {
     type: String,
     required: true
-    },
-    details: {
-      type: String,
-      required: true
-    },
-    date: {
-      type: Date,
-      default: Date.now
-    }
+  },
+  details: {
+    type: String,
+    required: true
+  },
+  date: {
+    type: Date,
+    default: Date.now
+  }
 });
 
-mongoose.model("ideas", IdeaSchema);
+mongoose.model('ideas', IdeaSchema);
